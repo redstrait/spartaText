@@ -1,22 +1,38 @@
-﻿namespace spartaTextRPG
+﻿using System.Reflection.Emit;
+
+namespace spartaTextRPG
 {
     internal class Program
     {
         // 아이템 관련 전역 변수 & 배열
-        static public int[] itemBuy = { 1, 1, 1, 0, 1, 0, 1 }; // 구매 여부 체크 전역 변수
-        static public int[] itemEquip = { 1, 0, 0, 0, 0, 0, 1 }; // 장착 여부 체크 전역 변수
+        static public int[] itemBuy = { 0, 0, 0, 0, 0, 0, 0 }; // 구매(보유) 여부 체크 전역 변수
+        static public int[] itemEquip = { 0, 0, 0, 0, 0, 0, 0 }; // 각 아이템의 장착 여부 체크 전역 변수
+        static public bool equipWeaon = false; // 무기 타입 아이템 장착 여부 체크
+        static public bool equipArmor = false; // 방어구 타입 아이템 장착 여부 체크
+        static public int? nowWeapon; // 현재 장착 중인 무기 체크용
+        static public int? nowArmor; // 현재 장착 중인 방어구 체크용
+
         static public int[] itemPrice = { 1000, 2250, 3500, 600, 1500, 3750, 100 }; // 아이템 가격
         static public int item_num = 1; // 장착 관리 - 아이템 넘버링용 전역 변수
 
         // 아이템 효과 관련 전역 변수
         static public bool isStatUpdate = false; // 아이템으로 인한 능력치 증감 최신화 여부 체크
-        static public int itemAtk = 0; // 아이템으로 인해 증가한 공격력
-        static public int itemDef = 0; // 아이템으로 인해 증가한 방어력
+        static public float itemAtk = 0; // 아이템으로 인해 증가한 공격력
+        static public float itemDef = 0; // 아이템으로 인해 증가한 방어력
 
         // 거래 관련 bool 값
         static public bool isStoreBuy = false; // 상점 구매 여부 체크
         static public bool isStoreSell = false; // 상점 판매 여부 체크
         static public bool isRest = false; // 휴식 여부 체크
+
+        // 던전
+        static public int dunChoose = 0; // 선택한 던전 번호
+        static public string[] dunName = { "쉬운", "일반", "어려운" }; // 던전 이름 목록
+        static public int[] dunRequireDef = { 5, 11, 17 }; // 각 던전 요구 방어력
+        static public int[] dunReward = { 1000, 1700, 2500 }; // 각 던전 보상 기본값
+
+        // Player 공격력 & 방어력
+        
 
         //===========================================
 
@@ -24,12 +40,12 @@
         {
             static public int Level = 1; // 레벨 1 
 
-            static public string Name = "김민범"; // 이름 김민범
-            static public string Job = "Chad (전사)"; // 직업 Chad (전사)
+            static public string Name = "스파르탄"; // 이름
+            static public string Job = "전사"; // 직업
+            static public double Atk; // 공격력 AtkInfo에서 계산
+            static public double Def; // 방어력 DefInfo에서 계산
 
-            static public int Atk = 10; // 공격력 10 
-            static public int Def = 5; // 방어력 5
-            static public int HP = 50; // 체력 100 
+            static public int HP = 100; // 체력 100 
             static public int Gold = 1500; // 돈 1500
 
             public void PrintInfo()
@@ -40,14 +56,14 @@
                 Console.WriteLine("상태 보기\n캐릭터의 정보가 표시됩니다.\n");
 
                 // 상태 정보
-                Console.WriteLine($"Lv. {Level.ToString("D2")}\n{Name}\n{Job}");
-                //Console.WriteLine($"공격력 : {Atk}\n방어력 : {Def}");
+                Console.WriteLine($"Lv. {Level.ToString("D2")}\n{Name} ( {Job} )");
+                // Console.WriteLine($"공격력 : {Atk}\n방어력 : {Def}");
                 AtkInfo();
                 DefInfo();
                 Console.WriteLine($"체 력 : {HP}\nGold : {Gold}G\n");
 
                 //선택지
-                Console.WriteLine("0. 나가기\n");
+                Console.WriteLine("0. 나가기");
 
                 while (true)
                 {
@@ -75,6 +91,8 @@
 
             public void AtkInfo() // 공격력 표기값 처리
             {
+                Atk = (10 + (((double)Level - 1) * 0.5)); // 공격력 10(기본값) + (레벨-1) * 0.5
+
                 if (itemAtk != 0) // 아이템으로 인해 증가한 공격력이 있다면
                 {
                     Console.WriteLine($"공격력 : {Atk + itemAtk} (+{itemAtk})");
@@ -86,6 +104,8 @@
             }
             public void DefInfo() // 공격력 표기값 처리
             {
+                Def = (5 + (((double)Level - 1)) * 1); // 방어력 5(기본값) + (레벨-1) * 1
+
                 if (itemDef != 0) // 아이템으로 인해 증가한 방어력이 있다면
                 {
                     Console.WriteLine($"방어력 : {Def + itemDef} (+{itemDef})");
@@ -213,12 +233,23 @@
                     switch (itemEquip[number])
                     {
                         case 0:
-                            itemEquip[number] = 1;
+                            itemEquip[number] = 1; // 아이템 장착
+
+                            // Q. 장착 중인 장비 중 무기 or 방어구가 있단 건 어떻게 판단해야 하는가
+                            // A. 보유 중인 아이템 목록을 순차적을 체크 - 장착 중인가? - type이 Weapon(or Armor)인가?
+                            // 아이템의 클래스화 필요 - 시간 부족
+
+                            // 현재 장착한 장비가 있다면 nowWeapon or nowArmor가 null이 아니라면
+                            // itemEquipt[nowWeapon or nowArmor]를 0으로 전환, 이후 현재 아이템을 등록
+
+                            // 현재 장착한 장비가 없다면, null 이라면
+                            // 현재 아이템을 등록
+
                             Equipt();
                             break;
 
                         case 1:
-                            itemEquip[number] = 0;
+                            itemEquip[number] = 0; // 아이템 장착 해제
                             Equipt();
                             break;
 
@@ -315,54 +346,11 @@
 
         //===========================================
 
-        static public void itemPriceInfo(int i) // 아이템 가격 정보
+        static public void itemPriceInfoBuy(int i) // 아이템 가격 정보 (구입 화면)
         {
             if (itemBuy[i] == 0) // 아이템을 구입하지 않았다면
             {
-                switch (i)
-                {
-                    case 0: // 수련자 갑옷
-                        {
-                            Console.WriteLine("| 1000G");
-                            break;
-                        }
-
-                    case 1: // 무쇠 갑옷
-                        {
-                            Console.WriteLine("| 1800G");
-                            break;
-                        }
-                    case 2: // 스파르타의 갑옷
-                        {
-                            Console.WriteLine("| 3500G");
-                            break;
-                        }
-                    case 3: // 낡은 검
-                        {
-                            Console.WriteLine("| 600G");
-                            break;
-                        }
-                    case 4: // 청동 도끼
-                        {
-                            Console.WriteLine("| 1500G");
-                            break;
-                        }
-                    case 5: // 스파르타의 창
-                        {
-                            Console.WriteLine("| 2700G");
-                            break;
-                        }
-                    case 6: // 도전 기능 - 나만의 아이템
-                        {
-                            Console.WriteLine("| 100G");
-                            break;
-                        }
-                    default:
-                        {
-                            Console.Write("상점 가격 목록 체크쪽 에러");
-                            break;
-                        }
-                }
+                Console.WriteLine($"| {itemPrice[i]}G");
             }
 
             else if (itemBuy[i] == 1) // 구입한 아이템이라면
@@ -372,9 +360,16 @@
 
             else
             {
-                Console.WriteLine("상점 가격 표시 여부 체크쪽 에러");
+                Console.WriteLine("상점 가격 표시 체크쪽 에러");
             }
 
+        }
+
+        //===========================================
+
+        static public void itemPriceInfoSell(int i) // 아이템 가격 정보 (판매 화면)
+        {
+            Console.WriteLine($"| {itemPrice[i]}G");
         }
 
         //===========================================
@@ -464,7 +459,7 @@
                 //Console.Write($"- {i} ");
                 Console.Write($"- ");
                 item_invenInfo(i);
-                itemPriceInfo(i);
+                itemPriceInfoBuy(i);
             }
 
             // 상점 선택지
@@ -522,7 +517,7 @@
             {
                 Console.Write($"- {i + 1} ");
                 item_invenInfo(i);
-                itemPriceInfo(i);
+                itemPriceInfoBuy(i);
             }
 
             // 상점 선택지
@@ -614,6 +609,7 @@
                 {
                     itemEquipMarkNum(i); // 장착 여부가 판매 결정에 영향을 줄 수 있다 판단하여 존치
                     item_invenInfo(i);
+                    itemPriceInfoSell(i);
                     Console.WriteLine(); // 목록 줄바꿈
 
                     // ex) 목록 0번에 4번 아이템이 들어오면 itemlist[1-1] = 4
@@ -753,6 +749,94 @@
 
         //===========================================
 
+        static public void DunInfo() // 던전입장 화면
+        {
+            Console.Clear();
+
+            // 상점 - 던전입장 안내문
+            Console.WriteLine("던전입장\n이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
+            for (int i = 0; i < dunName.Length; i++) // 던전 목록 출력
+            {
+                Console.WriteLine($"{i + 1}. {dunName[i]} 던전\t| 방어력 {dunRequireDef[i]} 이상 권장");
+            }
+            Console.WriteLine("0. 나가기");
+
+            while (true)
+            {
+                Console.Write("\n원하시는 행동을 입력해주세요.\n>> ");
+                string input = Console.ReadLine();
+
+                bool isNumberCheck = int.TryParse(input, out int intput); // 입력값이 숫자가 아니라면 -1로 설정
+                {
+                    if (isNumberCheck)
+                    {
+                        intput = int.Parse(input); // 입력값의 int형
+                    }
+                    else
+                    {
+                        intput = -1;
+                    }
+                }
+
+                if (intput == 0) // 메인화면으로 복귀
+                {
+                    MainInfo();
+                    break;
+                }
+                else if (intput >= 1 && intput <= 3) // 던전 선택 (임시)
+                {
+                    dunChoose = intput - 1; // 선택한 던전 번호 저장
+                    DunClear();
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("\n잘못된 입력입니다.");
+                }
+            }
+        }
+
+        //===========================================
+
+        static public void DunClear() // 던전 클리어 화면
+        {
+            Console.Clear();
+
+            // 던전 클리어 안내문
+            Console.WriteLine($"던전 클리어\n축하합니다!!\n{dunName[dunChoose]}던전을 클리어 하였습니다.\n");
+
+            // 탐험 결과
+            Console.WriteLine($"[탐험 결과]\n체력 {Player.HP} -> {Player.HP - 30}\nGold {Player.Gold} G -> {Player.Gold + dunReward[dunChoose]} G");
+
+            Console.WriteLine("\n0. 나가기");
+
+            Player.HP -= 30; // 체력 감소 (임시)
+            Player.Gold += dunReward[dunChoose]; // 보상 지급 (임시)
+            dunChoose = 0; // 선택한 던전 번호 초기화
+            Player.Level += 1; // 레벨업
+
+            while (true)
+            {
+                Console.Write("\n원하시는 행동을 입력해주세요.\n>> ");
+                string input = Console.ReadLine();
+
+                if (input == "0")
+                {
+                    DunInfo(); // 던전 선택 화면으로 복귀
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("\n잘못된 입력입니다.");
+                    continue;
+                }
+
+            }
+
+        }
+
+        //===========================================
+
         static public void MainInfo() // 시작 화면
         {
             Console.Clear();
@@ -769,7 +853,7 @@
             Console.WriteLine("이곳에서 던전으로 들어가기 전 활동을 할 수 있습니다.\n");
 
             // 선택지
-            Console.WriteLine("1. 상태 보기\n2. 인벤토리\n3. 상점\n5. 휴식");
+            Console.WriteLine("1. 상태 보기\n2. 인벤토리\n3. 상점\n4. 던전입장\n5. 휴식\n");
 
             while (true)
             {
@@ -789,6 +873,10 @@
 
                     case "3":
                         StoreInfo();
+                        break;
+
+                    case "4":
+                        DunInfo();
                         break;
 
                     case "5":
