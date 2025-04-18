@@ -1,0 +1,15 @@
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\bin\Debug\net8.0\spartaTextRPG.exe
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\bin\Debug\net8.0\spartaTextRPG.deps.json
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\bin\Debug\net8.0\spartaTextRPG.runtimeconfig.json
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\bin\Debug\net8.0\spartaTextRPG.dll
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\bin\Debug\net8.0\spartaTextRPG.pdb
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\obj\Debug\net8.0\spartaTextRPG.GeneratedMSBuildEditorConfig.editorconfig
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\obj\Debug\net8.0\spartaTextRPG.AssemblyInfoInputs.cache
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\obj\Debug\net8.0\spartaTextRPG.AssemblyInfo.cs
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\obj\Debug\net8.0\spartaTextRPG.csproj.CoreCompileInputs.cache
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\obj\Debug\net8.0\spartaTextRPG.sourcelink.json
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\obj\Debug\net8.0\spartaTextRPG.dll
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\obj\Debug\net8.0\refint\spartaTextRPG.dll
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\obj\Debug\net8.0\spartaTextRPG.pdb
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\obj\Debug\net8.0\spartaTextRPG.genruntimeconfig.cache
+D:\Github\spartaText\spartaTextRPG\spartaTextRPG\obj\Debug\net8.0\ref\spartaTextRPG.dll
