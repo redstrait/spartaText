@@ -2,10 +2,10 @@
 {
     internal class Program
     {
-        // 아이템 관련 전역 변수
-        static public int[] itemBuy = { 0, 0, 0, 0, 0, 0 }; // 구매 여부 체크 전역 변수
-        static public int[] itemEquip = { 0, 0, 0, 0, 0, 0 }; // 장착 여부 체크 전역 변수
-        static public int[] itemPrice = { 1000, 2250, 3500, 600, 1500, 3750 }; // 아이템 가격
+        // 아이템 관련 전역 변수 & 배열
+        static public int[] itemBuy = { 0, 0, 0, 0, 0, 0, 0 }; // 구매 여부 체크 전역 변수
+        static public int[] itemEquip = { 0, 0, 0, 0, 0, 0, 0 }; // 장착 여부 체크 전역 변수
+        static public int[] itemPrice = { 1000, 2250, 3500, 600, 1500, 3750, 100 }; // 아이템 가격
         static public int item_num = 1; // 장착 관리 - 아이템 넘버링용 전역 변수
         static public bool isStoreBuy = false; // 상점 구매 여부 체크
 
@@ -104,7 +104,7 @@
 
             Console.WriteLine("인벤토리\n보유 중인 아이템을 관리할 수 있습니다.\n\n[아이템 목록]");
 
-            for (int i = 0; i < 6; i++) // 아이템 정보 출력
+            for (int i = 0; i < itemBuy.Length; i++) // 아이템 정보 출력
             {
                 if (itemBuy[i] == 1)
                 {
@@ -155,7 +155,7 @@
             Console.Clear();
             Console.WriteLine("인벤토리 - 장착 관리\n보유 중인 아이템을 관리할 수 있습니다.\n\n[아이템 목록]");
 
-            for (int i = 0; i < 6; i++) // 아이템 정보 출력
+            for (int i = 0; i < itemBuy.Length; i++) // 아이템 정보 출력
             {
                 if (itemBuy[i] == 1)
                 {
@@ -298,6 +298,11 @@
                         Console.Write("스파르타의 창\t| 공격력 +7 | 스파르타의 전사들이 사용했다는 전설의 창입니다.\t");
                         break;
                     }
+                case 6: // 도전 기능 - 나만의 아이템
+                    {
+                        Console.Write("창작 무기\t| 공격력 +10 | 창작 무기 입니다.\t");
+                        break;
+                    }
                 default:
                     {
                         Console.Write("인벤토리 - 아이템 구매 여부 체크쪽 에러");
@@ -343,6 +348,11 @@
                     case 5: // 스파르타의 창
                         {
                             Console.WriteLine("| 3750G");
+                            break;
+                        }
+                    case 6: // 도전 기능 - 나만의 아이템
+                        {
+                            Console.WriteLine("| 100G");
                             break;
                         }
                     default:
@@ -402,6 +412,11 @@
                         itemAtk += 7;
                         break;
                     }
+                case 6: // 도전 기능 - 나만의 아이템
+                    {
+                        itemAtk += 10;
+                        break;
+                    }
                 default:
                     {
                         Console.Write("아이템 공격력/방어력 최신화에서 오류");
@@ -442,7 +457,7 @@
 
             Console.WriteLine("[아이템 목록]");
 
-            for (int i = 0; i < 6; i++) // 판매 아이템 목록 표시
+            for (int i = 0; i < itemBuy.Length; i++) // 판매 아이템 목록 표시
             {
                 //Console.Write($"- {i} ");
                 Console.Write($"- ");
@@ -495,7 +510,7 @@
 
             Console.WriteLine("[아이템 목록]");
 
-            for (int i = 0; i < 6; i++) // 판매 아이템 목록 표시
+            for (int i = 0; i < itemBuy.Length; i++) // 판매 아이템 목록 표시
             {
                 Console.Write($"- {i + 1} ");
                 item_invenInfo(i);
@@ -537,7 +552,7 @@
                     MainInfo(); // 메인 화면으로 복귀
                     break;
                 }
-                else if (intput >= 1 && intput <= 6)
+                else if (intput >= 1 && intput <= itemBuy.Length)
                 {
                     if (itemBuy[intput - 1] == 1) // 이미 구매한 아이템일 경우
                     {
