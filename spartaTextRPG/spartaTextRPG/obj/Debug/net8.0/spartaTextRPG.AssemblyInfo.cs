@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("spartaTextRPG")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b3e10ec18c3c7889d0f6356181b5c2a02ffe4d62")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bebd78cfce955a29aa6991f9b0c0a425f9c16998")]
 [assembly: System.Reflection.AssemblyProductAttribute("spartaTextRPG")]
 [assembly: System.Reflection.AssemblyTitleAttribute("spartaTextRPG")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

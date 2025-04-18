@@ -3,17 +3,19 @@
     internal class Program
     {
         // 아이템 관련 전역 변수 & 배열
-        static public int[] itemBuy = { 0, 0, 0, 0, 0, 0, 0 }; // 구매 여부 체크 전역 변수
-        static public int[] itemEquip = { 0, 0, 0, 0, 0, 0, 0 }; // 장착 여부 체크 전역 변수
+        static public int[] itemBuy = { 1, 1, 1, 0, 1, 0, 1 }; // 구매 여부 체크 전역 변수
+        static public int[] itemEquip = { 1, 0, 0, 0, 0, 0, 1 }; // 장착 여부 체크 전역 변수
         static public int[] itemPrice = { 1000, 2250, 3500, 600, 1500, 3750, 100 }; // 아이템 가격
         static public int item_num = 1; // 장착 관리 - 아이템 넘버링용 전역 변수
-        static public bool isStoreBuy = false; // 상점 구매 여부 체크
 
         // 아이템 효과 관련 전역 변수
         static public bool isStatUpdate = false; // 아이템으로 인한 능력치 증감 최신화 여부 체크
         static public int itemAtk = 0; // 아이템으로 인해 증가한 공격력
         static public int itemDef = 0; // 아이템으로 인해 증가한 방어력
 
+        // 거래 관련 bool 값
+        static public bool isStoreBuy = false; // 상점 구매 여부 체크
+        static public bool isStoreSell = false; // 상점 판매 여부 체크
         static public bool isRest = false; // 휴식 여부 체크
 
         //===========================================
@@ -104,7 +106,7 @@
 
             Console.WriteLine("인벤토리\n보유 중인 아이템을 관리할 수 있습니다.\n\n[아이템 목록]");
 
-            for (int i = 0; i < itemBuy.Length; i++) // 아이템 정보 출력
+            for (int i = 0; i < itemBuy.Length; i++) // 보유 아이템 정보 출력
             {
                 if (itemBuy[i] == 1)
                 {
@@ -150,12 +152,12 @@
 
         static public void Equipt() // 장착 관리
         {
-            int[] itemlist = new int[6]; // 목록 순서 번호와 실제 아이템 번호 연동용 임시 배열
+            int[] itemlist = new int[itemBuy.Length]; // 목록 순서 번호와 실제 아이템 번호 연동용 임시 배열
 
             Console.Clear();
             Console.WriteLine("인벤토리 - 장착 관리\n보유 중인 아이템을 관리할 수 있습니다.\n\n[아이템 목록]");
 
-            for (int i = 0; i < itemBuy.Length; i++) // 아이템 정보 출력
+            for (int i = 0; i < itemBuy.Length; i++) // 보유 아이템 정보 출력
             {
                 if (itemBuy[i] == 1)
                 {
@@ -327,7 +329,7 @@
 
                     case 1: // 무쇠 갑옷
                         {
-                            Console.WriteLine("| 2250G");
+                            Console.WriteLine("| 1800G");
                             break;
                         }
                     case 2: // 스파르타의 갑옷
@@ -347,7 +349,7 @@
                         }
                     case 5: // 스파르타의 창
                         {
-                            Console.WriteLine("| 3750G");
+                            Console.WriteLine("| 2700G");
                             break;
                         }
                     case 6: // 도전 기능 - 나만의 아이템
@@ -446,7 +448,7 @@
 
         //===========================================
 
-        static public void StoreInfo()
+        static public void StoreInfo() // 상점 - 정보
         {
             Console.Clear();
 
@@ -466,7 +468,7 @@
             }
 
             // 상점 선택지
-            Console.WriteLine("\n1. 아이템 구매\n0. 나가기\n");
+            Console.WriteLine("\n1. 아이템 구매\n2. 아이템 판매\n0. 나가기\n");
 
             while (true)
             {
@@ -488,6 +490,12 @@
                             break;
                         }
 
+                    case "2":
+                        {
+                            StoreSell(); // 아이템 판매 진입
+                            break;
+                        }
+
                     default:
                         {
                             Console.Write("\n잘못된 입력입니다");
@@ -499,7 +507,7 @@
 
         //===========================================
 
-        static public void StoreTrade()
+        static public void StoreTrade() // 상점 - 아이템 구매
         {
             Console.Clear();
 
@@ -549,7 +557,8 @@
 
                 if (intput == 0)
                 {
-                    MainInfo(); // 메인 화면으로 복귀
+                    // MainInfo();
+                    StoreInfo(); // 상점 정보 화면으로 복귀
                     break;
                 }
                 else if (intput >= 1 && intput <= itemBuy.Length)
@@ -566,7 +575,7 @@
                         itemBuy[intput - 1] = 1; // 아이템 구매 처리
 
                         isStoreBuy = true; // 구매 여부 활성화
-                        StoreTrade(); // 정보창 최신화                      
+                        StoreTrade(); // 구입 정보창 최신화                      
                         break;
                     }
 
@@ -582,6 +591,101 @@
                     continue;
                 }
             }
+        }
+
+        //===========================================
+
+        static public void StoreSell() // 상점 - 아이템 판매
+        {
+            int[] itemlist = new int[itemBuy.Length]; // 목록 순서 번호와 실제 아이템 번호 연동용 임시 배열
+
+            Console.Clear();
+
+            // 상점 - 아이템 판매 안내문
+            Console.WriteLine("상점 - 아이템 판매\n필요한 아이템을 얻을 수 있는 상점입니다.\n");
+            Console.WriteLine("[보유 골드]");
+            Console.WriteLine($"{Player.Gold}G\n");
+
+            Console.WriteLine("[아이템 목록]");
+
+            for (int i = 0; i < itemBuy.Length; i++) // 보유 아이템 정보 출력
+            {
+                if (itemBuy[i] == 1)
+                {
+                    itemEquipMarkNum(i); // 장착 여부가 판매 결정에 영향을 줄 수 있다 판단하여 존치
+                    item_invenInfo(i);
+                    Console.WriteLine(); // 목록 줄바꿈
+
+                    // ex) 목록 0번에 4번 아이템이 들어오면 itemlist[1-1] = 4
+                    // 이후 equiptItem[]에 해당 i값을 넣을 예정
+                    itemlist[item_num - 1] = i;
+
+                    item_num += 1; // 이후 목록에 등장할 아이템 넘버링
+                }
+            }
+
+            int itemCount = item_num - 1; // 목록에 나타난 아이템 개수 체크
+            item_num = 1; // 아이템 넘버링 종료 후 초기화
+
+            // 아이템 판매 선택지
+            Console.WriteLine("\n0. 나가기\n");
+
+            if (isStoreSell == true) // 아이템을 판매해서 목록이 갱신된 경우
+            {
+                Console.WriteLine("판매가 완료되었습니다.");
+
+                isStoreSell = false; // 판매 여부 초기화
+            }
+
+            while (true)
+            {
+                // 아이템 판매 안내문
+                Console.Write("원하시는 행동을 입력해주세요.\n>> ");
+                string input = Console.ReadLine();
+
+                bool isNumberCheck = int.TryParse(input, out int intput); // 입력값이 숫자가 아니라면 -1로 설정
+                {
+                    if (isNumberCheck)
+                    {
+                        intput = int.Parse(input); // 입력값의 int형
+                    }
+                    else
+                    {
+                        intput = -1;
+                    }
+                }
+
+                if (intput == 0) // 상점 정보 화면으로 복귀
+                {
+                    // MainInfo();
+                    StoreInfo();
+                    break;
+                }
+                else if (intput >= 1 && intput <= itemCount) // intput이 1 이상이며 목록 내 아이템 개수 이하일 때 - 즉, 목록의 아이템 선택
+                {
+                    isStatUpdate = false; // 아이템 보유 여부가 변경되었으므로 능력치 반영 최신화 시켜줘야 함
+                    int number;
+                    number = itemlist[intput - 1]; // intput - 1은 호출하려는 itemlist의 번호, 이를 임시 변수에 보관
+
+                    itemEquip[number] = 0; // 장착 여부 초기화
+                    itemBuy[number] = 0; // 보유 여부 초기화
+
+                    double dbPrice = itemPrice[intput - 1]; // 판매가 - 구입 가격의 85% 계산용 임시 변수
+                    double sellPrice = dbPrice * 0.85; // 구입 가격의 85% 계산
+
+                    Player.Gold += (int)sellPrice; // 판매가 획득 // 명시적 형전환
+
+                    isStoreSell = true; // 구매 여부 활성화
+                    StoreSell(); // 판매 정보창 최신화
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("\n잘못된 입력입니다.");
+                    continue;
+                }
+            }
+
         }
 
         //===========================================
